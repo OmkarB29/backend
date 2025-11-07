@@ -19,11 +19,23 @@ public class ProgressController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/{email}")
-    public Progress getProgress(@PathVariable String email) {
-        User user = userRepository.findByEmail(email);
-        return progressRepository.findByUser(user);
+   @GetMapping("/{email}")
+public Progress getProgress(@PathVariable String email) {
+    User user = userRepository.findByEmail(email);
+    Progress progress = progressRepository.findByUser(user);
+
+    if (progress == null) {
+        progress = new Progress();
+        progress.setUser(user);
+        progress.setProgressPercent(0);
+        progress.setQuizzesTaken(0);
+        progress.setStudyPlanWeek("Week 1");
+        progressRepository.save(progress);
     }
+
+    return progress;
+}
+
 
     @PostMapping("/update/{email}")
     public Progress updateProgress(@PathVariable String email, @RequestBody Progress newProgressData) {

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,21 +27,14 @@ public class AuthController {
         return userRepository.save(user);
     }
 
-   @PostMapping("/login")
+  @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody User user) {
     User u = userRepository.findByEmail(user.getEmail());
 
-    if (u == null) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("User not found");
+    if (u == null || !u.getPassword().equals(user.getPassword())) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
-    if (!u.getPassword().equals(user.getPassword())) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body("Incorrect password");
-    }
-
-    // ✅ Return only necessary safe fields, not everything
     Map<String, Object> response = new HashMap<>();
     response.put("id", u.getId());
     response.put("name", u.getName());
